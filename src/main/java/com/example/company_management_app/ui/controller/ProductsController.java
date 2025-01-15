@@ -24,7 +24,14 @@ public class ProductsController {
         List<ProductsDto> productsDtos = productsService.findAllByCompanyBussinessNo(bussinessNo);
         return productsDtos;
     }
-    @GetMapping("/{barcode}")
+    @GetMapping("/{name}")
+    public List<ProductsDto> findAllByNameAndCompany(@PathVariable String name,@RequestParam Long bussinessNo){
+        List<ProductsDto> productsDtos = productsService.findAllByNameAndCompanyBussinessNo(name,bussinessNo);
+        if(productsDtos.isEmpty())throw new RuntimeException("Not found!!!");
+
+        return productsDtos;
+    }
+    @GetMapping("/id/{barcode}")
     public ProductsDto findByBarcode(@PathVariable Long barcode, @RequestParam Long bussinessNo){
         ProductsDto product = productsService.findByBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
         if (product == null)throw new RuntimeException("Not Found!!!");

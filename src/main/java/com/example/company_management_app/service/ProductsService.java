@@ -8,6 +8,7 @@ import java.util.List;
 public interface ProductsService {
 
     List<ProductsDto> findAllByCompanyBussinessNo(Long bussinessNo);
+    List<ProductsDto> findAllByNameAndCompanyBussinessNo(String name,Long bussinessNo);
     ProductsDto createProduct(ProductsDto productsDto);
     ProductsDto updateProduct(Long barcode, ProductsDto product,Long bussinessNo);
     ProductsDto findByBarcodeAndCompanyBussinessNo(Long barcode,Long bussinessNo);
