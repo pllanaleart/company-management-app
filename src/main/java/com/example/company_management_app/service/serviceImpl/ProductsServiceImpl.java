@@ -35,4 +35,53 @@ public class ProductsServiceImpl implements ProductsService {
         }
         return productsDtos;
     }
+
+    @Override
+    public ProductsDto createProduct(ProductsDto productsDto) {
+        ProductsEntity productsEntity = mapper.map(productsDto, ProductsEntity.class);
+        ProductsEntity createdProduct = productsRepository.save(productsEntity);
+        ProductsDto returnProduct = mapper.map(createdProduct, ProductsDto.class);
+        return returnProduct;
+    }
+
+    @Override
+    public ProductsDto updateProduct(Long barcode, ProductsDto product, Long bussinessNo) {
+
+        ProductsDto oldProduct = findByBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
+        if(product.getName() != null){
+            oldProduct.setName(product.getName());
+        }
+        if(product.getDescription() != null){
+            oldProduct.setDescription(product.getDescription());
+        }
+        if(product.getCategory() != null){
+            oldProduct.setCategory(product.getCategory());
+        }
+        if(product.getPrice() != oldProduct.getPrice()){
+            oldProduct.setPrice(product.getPrice());
+        }
+        if(product.getPriceNoTvsh() != oldProduct.getPriceNoTvsh()){
+            oldProduct.setPriceNoTvsh(product.getPriceNoTvsh());
+        }
+        if(product.getTvsh() != oldProduct.getTvsh()){
+            oldProduct.setTvsh(product.getTvsh());
+        }
+        if(product.getStatus() != null){
+            oldProduct.setStatus(product.getStatus());
+        }
+        ProductsEntity updatedProduct = mapper.map(oldProduct, ProductsEntity.class);
+        ProductsEntity createdProduct = productsRepository.save(updatedProduct);
+
+        return mapper.map(createdProduct, ProductsDto.class);
+    }
+
+    @Override
+    public ProductsDto findByBarcodeAndCompanyBussinessNo(Long barcode, Long bussinessNo) {
+
+        ProductsEntity product = productsRepository.findByBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
+        if (product == null)throw new RuntimeException("Not found!!");
+        ProductsDto productsDto = mapper.map(product, ProductsDto.class);
+
+        return productsDto;
+    }
 }
