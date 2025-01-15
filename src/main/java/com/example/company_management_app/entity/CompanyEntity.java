@@ -1,6 +1,7 @@
 package com.example.company_management_app.entity;
 
 import jakarta.persistence.*;
+import org.apache.catalina.User;
 
 import java.util.List;
 
@@ -19,6 +20,66 @@ public class CompanyEntity {
   private Long bankNo;
   @OneToMany(mappedBy = "company")
   private List<ProductsEntity> productsEntity;
+  @OneToMany(mappedBy = "company")
+  private List<StockEntity> stockEntities;
+  @OneToMany(mappedBy = "company")
+  private List<BuyersEntity> buyerEntity;
+  @OneToMany(mappedBy = "company")
+  private List<EmployeesEntity> employees;
+  @OneToMany(mappedBy = "company")
+  private List<ExpensesEntity> expenses;
+  @OneToMany(mappedBy = "company")
+  private List<SellingsEntity> sellings;
+  @OneToMany(mappedBy = "company")
+  private List<UsersEntity> users;
+
+  public List<BuyersEntity> getBuyerEntity() {
+    return buyerEntity;
+  }
+
+  public void setBuyerEntity(List<BuyersEntity> buyerEntity) {
+    this.buyerEntity = buyerEntity;
+  }
+
+  public List<EmployeesEntity> getEmployees() {
+    return employees;
+  }
+
+  public void setEmployees(List<EmployeesEntity> employees) {
+    this.employees = employees;
+  }
+
+  public List<ExpensesEntity> getExpenses() {
+    return expenses;
+  }
+
+  public void setExpenses(List<ExpensesEntity> expenses) {
+    this.expenses = expenses;
+  }
+
+  public List<SellingsEntity> getSellings() {
+    return sellings;
+  }
+
+  public void setSellings(List<SellingsEntity> sellings) {
+    this.sellings = sellings;
+  }
+
+  public List<UsersEntity> getUsers() {
+    return users;
+  }
+
+  public void setUsers(List<UsersEntity> users) {
+    this.users = users;
+  }
+
+  public List<StockEntity> getStockEntities() {
+    return stockEntities;
+  }
+
+  public void setStockEntities(List<StockEntity> stockEntities) {
+    this.stockEntities = stockEntities;
+  }
 
   public Long getBussinessNo() {
     return bussinessNo;

@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface ProductsService {
 
-    List<ProductsDto> findAll();
-    List<ProductsDto> findAllByCompany(Long bussinessNo);
+    List<ProductsDto> findAllByCompanyBussinessNo(Long bussinessNo);
 }

@@ -24,22 +24,8 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<ProductsDto> findAll() {
-        List<ProductsEntity> productsEntities = productsRepository.findAll();
-        List<ProductsDto> productsDtos = new ArrayList<>();
-        if(productsEntities.isEmpty()){throw new RuntimeException("Not Found!!!");}
-        else {
-            for(ProductsEntity productsEntity:productsEntities){
-                productsDtos.add(mapper.map(productsEntity, ProductsDto.class));
-            }
-                    }
-        return productsDtos;
-    }
-
-    @Override
-    public List<ProductsDto> findAllByCompany(Long bussinessNo) {
-        CompanyEntity companyEntity = companyRepository.findByBussinessNo(bussinessNo);
-        List<ProductsEntity> productsEntities = productsRepository.findAllByCompany(companyEntity);
+    public List<ProductsDto> findAllByCompanyBussinessNo(Long bussinessNo) {
+        List<ProductsEntity> productsEntities = productsRepository.findAllByCompanyBussinessNo(bussinessNo);
         List<ProductsDto> productsDtos = new ArrayList<>();
         if(productsEntities.isEmpty()){throw new RuntimeException("Not Found!!!");}
         else {

@@ -2,6 +2,8 @@ package com.example.company_management_app.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity(name = "products")
 public class ProductsEntity {
 
@@ -17,6 +19,26 @@ public class ProductsEntity {
     private double priceNoTvsh;
     private double tvsh;
     private String status;
+    @OneToOne(mappedBy = "product")
+    private StockEntity stock;
+    @OneToMany(mappedBy = "product")
+    private List<ProductsInvoiced> productsInvoiced;
+
+    public List<ProductsInvoiced> getProductsInvoiced() {
+        return productsInvoiced;
+    }
+
+    public void setProductsInvoiced(List<ProductsInvoiced> productsInvoiced) {
+        this.productsInvoiced = productsInvoiced;
+    }
+
+    public StockEntity getStock() {
+        return stock;
+    }
+
+    public void setStock(StockEntity stock) {
+        this.stock = stock;
+    }
 
     public Long getBarcode() {
         return barcode;

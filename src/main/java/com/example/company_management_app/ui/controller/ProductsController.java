@@ -15,15 +15,10 @@ public class ProductsController {
         this.productsService = productsService;
     }
 
-//    @GetMapping
-//    public List<ProductsDto> findAll(){
-//        List<ProductsDto> productsDtos = productsService.findAll();
-//        return productsDtos;
-//    }
 
     @GetMapping
     public List<ProductsDto> findAllByCompany(@RequestParam Long bussinessNo){
-        List<ProductsDto> productsDtos = productsService.findAllByCompany(bussinessNo);
+        List<ProductsDto> productsDtos = productsService.findAllByCompanyBussinessNo(bussinessNo);
         return productsDtos;
     }
 }
