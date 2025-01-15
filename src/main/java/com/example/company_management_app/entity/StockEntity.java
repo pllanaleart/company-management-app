@@ -9,7 +9,7 @@ public class StockEntity {
 
     @Id
     @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "barcode")
+    @JoinColumn(name = "productId", referencedColumnName = "id")
     private ProductsEntity product;
     private double unit;
     private double quantity;

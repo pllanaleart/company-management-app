@@ -31,6 +31,12 @@ public class ProductsController {
 
         return productsDtos;
     }
+    @GetMapping("/i/{id}")
+    public  ProductsDto findById(@PathVariable Long id,@RequestParam Long bussinessNo){
+        ProductsDto productsDto = productsService.findByIdAndCompanyBussinessNo(id,bussinessNo);
+        if(productsDto ==null)throw new RuntimeException("Not found!!!");
+        return productsDto;
+    }
     @GetMapping("/id/{barcode}")
     public ProductsDto findByBarcode(@PathVariable Long barcode, @RequestParam Long bussinessNo){
         ProductsDto product = productsService.findByBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
@@ -47,11 +53,18 @@ public class ProductsController {
         if(createdProduct == null)throw new RuntimeException("Cannot create product!!");
         return createdProduct;
     }
-    @PutMapping("/{barcode}")
-    public ProductsDto updateProduct(@PathVariable Long barcode,@RequestBody ProductsDto product,@RequestParam Long bussinessNo){
+    @PutMapping("/{id}")
+    public ProductsDto updateProduct(@PathVariable Long id,@RequestBody ProductsDto product,@RequestParam Long bussinessNo){
 
-        ProductsDto productsDto = productsService.updateProduct(barcode,product,bussinessNo);
+        ProductsDto productsDto = productsService.updateProduct(id,product,bussinessNo);
         if (productsDto == null)throw new RuntimeException("Not updated");
         return productsDto;
+    }
+    @DeleteMapping("/{id}")
+    public String deleteProduct(@PathVariable Long id,@RequestParam Long bussinessNo){
+
+        String message = productsService.deleteProduct(id,bussinessNo);
+
+        return message;
     }
 }

@@ -13,5 +13,6 @@ public interface ProductsRepository extends JpaRepository<ProductsEntity, Long> 
 
     List<ProductsEntity> findAllByCompanyBussinessNo(Long bussinessNo);
     ProductsEntity findByBarcodeAndCompanyBussinessNo(Long barcode,Long bussinessNo);
+    ProductsEntity findByIdAndCompanyBussinessNo(Long id , Long bussinessNo);
     List<ProductsEntity> findAllByNameContainingAndCompanyBussinessNo(String name , Long bussinessNo);
 }

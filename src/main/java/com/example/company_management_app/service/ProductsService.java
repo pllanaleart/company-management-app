@@ -12,4 +12,6 @@ public interface ProductsService {
     ProductsDto createProduct(ProductsDto productsDto);
     ProductsDto updateProduct(Long barcode, ProductsDto product,Long bussinessNo);
     ProductsDto findByBarcodeAndCompanyBussinessNo(Long barcode,Long bussinessNo);
+    ProductsDto findByIdAndCompanyBussinessNo(Long id,Long bussinessNo);
+    String deleteProduct(Long barcode,Long bussinessNo);
 }

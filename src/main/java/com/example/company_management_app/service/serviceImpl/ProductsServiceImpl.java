@@ -56,9 +56,12 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public ProductsDto updateProduct(Long barcode, ProductsDto product, Long bussinessNo) {
+    public ProductsDto updateProduct(Long id, ProductsDto product, Long bussinessNo) {
 
-        ProductsDto oldProduct = findByBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
+        ProductsDto oldProduct = findByIdAndCompanyBussinessNo(id,bussinessNo);
+        if(product.getBarcode() != null){
+            oldProduct.setBarcode(product.getBarcode());
+        }
         if(product.getName() != null){
             oldProduct.setName(product.getName());
         }
@@ -94,5 +97,25 @@ public class ProductsServiceImpl implements ProductsService {
         ProductsDto productsDto = mapper.map(product, ProductsDto.class);
 
         return productsDto;
+    }
+
+    @Override
+    public ProductsDto findByIdAndCompanyBussinessNo(Long id, Long bussinessNo) {
+        ProductsEntity product = productsRepository.findByIdAndCompanyBussinessNo(id, bussinessNo);
+
+        if(product == null)throw new RuntimeException("Product not Found!!");
+        ProductsDto productsDto = mapper.map(product, ProductsDto.class);
+        return productsDto;
+    }
+
+    @Override
+    public String deleteProduct(Long id, Long bussinessNo) {
+        ProductsEntity product = productsRepository.findByIdAndCompanyBussinessNo(id,bussinessNo);
+        String message = "";
+        if(product != null){
+            productsRepository.delete(product);
+            message = product.getName() + " deleted successfully";
+        }else throw new RuntimeException("Product with id "+ id + " not found!!");
+        return message;
     }
 }

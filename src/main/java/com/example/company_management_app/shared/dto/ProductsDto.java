@@ -3,7 +3,7 @@ package com.example.company_management_app.shared.dto;
 import com.example.company_management_app.entity.CompanyEntity;
 
 public class ProductsDto {
-
+    private Long id;
     private Long barcode;
     private String name;
     private String description;
@@ -13,6 +13,14 @@ public class ProductsDto {
     private double priceNoTvsh;
     private double tvsh;
     private String status;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getBarcode() {
         return barcode;

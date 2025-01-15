@@ -8,6 +8,8 @@ import java.util.List;
 public class ProductsEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Long barcode;
     private String name;
     private String description;
@@ -23,6 +25,14 @@ public class ProductsEntity {
     private StockEntity stock;
     @OneToMany(mappedBy = "product")
     private List<ProductsInvoiced> productsInvoiced;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public List<ProductsInvoiced> getProductsInvoiced() {
         return productsInvoiced;
