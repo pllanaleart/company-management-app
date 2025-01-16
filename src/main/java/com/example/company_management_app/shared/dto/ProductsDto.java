@@ -1,7 +1,5 @@
 package com.example.company_management_app.shared.dto;
 
-import com.example.company_management_app.entity.CompanyEntity;
-
 public class ProductsDto {
     private Long id;
     private Long barcode;

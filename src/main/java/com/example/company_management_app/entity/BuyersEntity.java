@@ -3,6 +3,7 @@ package com.example.company_management_app.entity;
 import jakarta.persistence.*;
 
 import java.util.List;
+
 @Entity(name = "buyers")
 public class BuyersEntity {
 
