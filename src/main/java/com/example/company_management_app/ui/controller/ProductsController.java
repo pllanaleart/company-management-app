@@ -2,8 +2,10 @@ package com.example.company_management_app.ui.controller;
 
 import com.example.company_management_app.service.CompanyService;
 import com.example.company_management_app.service.ProductsService;
+import com.example.company_management_app.shared.AppConstants;
 import com.example.company_management_app.shared.dto.CompanyDto;
 import com.example.company_management_app.shared.dto.ProductsDto;
+import com.example.company_management_app.ui.response.ProductsPageResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +22,13 @@ public class ProductsController {
     }
 
     @GetMapping
-    public List<ProductsDto> findAllByCompany(@RequestParam Long bussinessNo){
-        List<ProductsDto> productsDtos = productsService.findAllByCompanyBussinessNo(bussinessNo);
-        return productsDtos;
+    public ProductsPageResponse findAllByCompany(@RequestParam Long bussinessNo,
+                                              @RequestParam(value = "page",defaultValue = AppConstants.DEFAULT_PAGE_NO) int page,
+                                              @RequestParam(value = "limit",defaultValue = AppConstants.DEFAULT_PAGE_SIZE)int limit,
+                                              @RequestParam(value = "sortBy",defaultValue = AppConstants.DEFAULT_SORT_BY) String sortBy,
+                                              @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIR) String sortDir){
+        ProductsPageResponse productsResponse = productsService.findAllByCompanyBussinessNo(bussinessNo,page,limit,sortBy,sortDir);
+        return productsResponse;
     }
     @GetMapping("/{name}")
     public List<ProductsDto> findAllByNameAndCompany(@PathVariable String name,@RequestParam Long bussinessNo){

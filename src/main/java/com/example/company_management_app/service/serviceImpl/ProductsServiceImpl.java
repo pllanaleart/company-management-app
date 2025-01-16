@@ -6,7 +6,12 @@ import com.example.company_management_app.repository.CompanyRepository;
 import com.example.company_management_app.repository.ProductsRepository;
 import com.example.company_management_app.service.ProductsService;
 import com.example.company_management_app.shared.dto.ProductsDto;
+import com.example.company_management_app.ui.response.ProductsPageResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,16 +29,21 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public List<ProductsDto> findAllByCompanyBussinessNo(Long bussinessNo) {
-        List<ProductsEntity> productsEntities = productsRepository.findAllByCompanyBussinessNo(bussinessNo);
+    public ProductsPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit , String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page,limit,sort);
+        Page<ProductsEntity> productsEntities = productsRepository.findAllByCompanyBussinessNo(bussinessNo, pageable);
+        List<ProductsEntity> productsEntitiesList = productsEntities.getContent();
         List<ProductsDto> productsDtos = new ArrayList<>();
-        if(productsEntities.isEmpty()){throw new RuntimeException("Not Found!!!");}
+        if(productsEntitiesList.isEmpty()){throw new RuntimeException("Not Found!!!");}
         else {
-            for(ProductsEntity productsEntity:productsEntities){
+            for(ProductsEntity productsEntity:productsEntitiesList){
                 productsDtos.add(mapper.map(productsEntity, ProductsDto.class));
             }
         }
-        return productsDtos;
+        ProductsPageResponse response = new ProductsPageResponse(productsDtos,page,limit,productsEntities.getTotalElements(),productsEntities.getTotalPages(),productsEntities.isLast());
+
+        return response;
     }
 
     @Override
