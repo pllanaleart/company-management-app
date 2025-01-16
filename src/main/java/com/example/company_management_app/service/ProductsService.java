@@ -2,7 +2,7 @@ package com.example.company_management_app.service;
 
 
 import com.example.company_management_app.shared.dto.ProductsDto;
-import com.example.company_management_app.ui.response.ProductsPageResponse;
+import com.example.company_management_app.ui.response.products.ProductsPageResponse;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface ProductsService {
 
     List<ProductsDto> findAllByNameAndCompanyBussinessNo(String name, Long bussinessNo);
 
-    ProductsDto createProduct(ProductsDto productsDto);
+    ProductsDto createProduct(ProductsDto productsDto, Long bussinessNo);
 
     ProductsDto updateProduct(Long barcode, ProductsDto product, Long bussinessNo);
 

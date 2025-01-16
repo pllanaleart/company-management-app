@@ -1,11 +1,11 @@
 package com.example.company_management_app.service.serviceImpl;
 
 import com.example.company_management_app.entity.ProductsEntity;
-import com.example.company_management_app.repository.CompanyRepository;
 import com.example.company_management_app.repository.ProductsRepository;
 import com.example.company_management_app.service.ProductsService;
+import com.example.company_management_app.shared.AppConstants;
 import com.example.company_management_app.shared.dto.ProductsDto;
-import com.example.company_management_app.ui.response.ProductsPageResponse;
+import com.example.company_management_app.ui.response.products.ProductsPageResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,12 +19,11 @@ import java.util.List;
 @Service
 public class ProductsServiceImpl implements ProductsService {
     private ProductsRepository productsRepository;
-    private CompanyRepository companyRepository;
     private ModelMapper mapper = new ModelMapper();
 
-    public ProductsServiceImpl(ProductsRepository productsRepository, CompanyRepository companyRepository) {
+    public ProductsServiceImpl(ProductsRepository productsRepository) {
         this.productsRepository = productsRepository;
-        this.companyRepository = companyRepository;
+
     }
 
     @Override
@@ -58,11 +57,14 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public ProductsDto createProduct(ProductsDto productsDto) {
+    public ProductsDto createProduct(ProductsDto productsDto,Long bussinessNo) {
+        ProductsEntity productSearch = productsRepository.findByBarcodeAndCompanyBussinessNo(productsDto.getBarcode(),bussinessNo);
+        if(productSearch != null){throw new RuntimeException("Product with barcode: "+ productSearch.getBarcode()+" exists");}
+        productsDto.setPriceNoTvsh((productsDto.getPrice()-(productsDto.getPrice()*(AppConstants.DEFAULT_TVSH / 100))));
+        if(productsDto.getTvsh()<= 0){ productsDto.setTvsh(AppConstants.DEFAULT_TVSH);}
         ProductsEntity productsEntity = mapper.map(productsDto, ProductsEntity.class);
         ProductsEntity createdProduct = productsRepository.save(productsEntity);
-        ProductsDto returnProduct = mapper.map(createdProduct, ProductsDto.class);
-        return returnProduct;
+        return mapper.map(createdProduct, ProductsDto.class);
     }
 
     @Override

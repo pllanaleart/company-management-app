@@ -1,25 +1,18 @@
-package com.example.company_management_app.entity;
+package com.example.company_management_app.shared.dto;
 
-import jakarta.persistence.*;
+import com.example.company_management_app.entity.CompanyEntity;
+import com.example.company_management_app.entity.ProductsEntity;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "stock")
-public class StockEntity {
+public class StockDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "productId", referencedColumnName = "id")
-    private ProductsEntity product;
+    private ProductsDto product;
     private String unit;
     private double quantity;
     private LocalDateTime lastUpdated;
-    @ManyToOne
-    @JoinColumn(name = "companyNo")
-    private CompanyEntity company;
-
+    private CompanyDto company;
 
     public Long getId() {
         return id;
@@ -29,13 +22,7 @@ public class StockEntity {
         this.id = id;
     }
 
-    public ProductsEntity getProduct() {
-        return product;
-    }
 
-    public void setProduct(ProductsEntity product) {
-        this.product = product;
-    }
 
     public String getUnit() {
         return unit;
@@ -61,11 +48,19 @@ public class StockEntity {
         this.lastUpdated = lastUpdated;
     }
 
-    public CompanyEntity getCompany() {
+    public ProductsDto getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductsDto product) {
+        this.product = product;
+    }
+
+    public CompanyDto getCompany() {
         return company;
     }
 
-    public void setCompany(CompanyEntity company) {
+    public void setCompany(CompanyDto company) {
         this.company = company;
     }
 }

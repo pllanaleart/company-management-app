@@ -5,7 +5,7 @@ import com.example.company_management_app.service.ProductsService;
 import com.example.company_management_app.shared.AppConstants;
 import com.example.company_management_app.shared.dto.CompanyDto;
 import com.example.company_management_app.shared.dto.ProductsDto;
-import com.example.company_management_app.ui.response.ProductsPageResponse;
+import com.example.company_management_app.ui.response.products.ProductsPageResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class ProductsController {
             throw new RuntimeException("Company not found!!");
         }
         productsDto.setCompany(companyDto);
-        ProductsDto createdProduct = productsService.createProduct(productsDto);
+        ProductsDto createdProduct = productsService.createProduct(productsDto,bussinessNo);
         if (createdProduct == null) throw new RuntimeException("Cannot create product!!");
         return createdProduct;
     }
