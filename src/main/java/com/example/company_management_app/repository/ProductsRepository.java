@@ -17,5 +17,5 @@ public interface ProductsRepository extends JpaRepository<ProductsEntity, Long> 
 
     ProductsEntity findByIdAndCompanyBussinessNo(Long id, Long bussinessNo);
 
-    List<ProductsEntity> findAllByNameContainingAndCompanyBussinessNo(String name, Long bussinessNo);
+    List<ProductsEntity> findAllByNameContainingIgnoreCaseAndCompanyBussinessNo(String name, Long bussinessNo);
 }

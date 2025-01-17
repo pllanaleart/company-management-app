@@ -5,7 +5,6 @@ import com.example.company_management_app.entity.StockEntity;
 import com.example.company_management_app.repository.ProductsRepository;
 import com.example.company_management_app.repository.StockRepository;
 import com.example.company_management_app.service.StockService;
-import com.example.company_management_app.shared.dto.ProductsDto;
 import com.example.company_management_app.shared.dto.StockDto;
 import com.example.company_management_app.ui.request.stock.StockCreateRequest;
 import com.example.company_management_app.ui.response.stock.StockPageResponse;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +49,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockDto> findAllByProductNameContainingAndCompanyBussinessNo(String name, Long bussinessNo) {
-        List<StockEntity> stockEntities = stockRepository.findAllByProductNameContainingAndCompanyBussinessNo(name,bussinessNo);
+        List<StockEntity> stockEntities = stockRepository.findAllByProductNameContainingIgnoreCaseAndCompanyBussinessNo(name,bussinessNo);
         if (stockEntities.isEmpty())throw new RuntimeException("Not found!!");
         List<StockDto> stockDtos = new ArrayList<>();
         for (StockEntity stock:stockEntities){

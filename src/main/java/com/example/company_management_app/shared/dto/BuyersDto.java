@@ -2,6 +2,7 @@ package com.example.company_management_app.shared.dto;
 
 
 public class BuyersDto {
+    private Long id;
     private Long bussinessNo;
     private String buyerStatus;
     private String name;
@@ -12,6 +13,14 @@ public class BuyersDto {
     private String email;
     private String logo;
     private Long bankNo;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getBussinessNo() {
         return bussinessNo;

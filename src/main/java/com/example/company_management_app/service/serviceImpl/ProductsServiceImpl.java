@@ -47,7 +47,7 @@ public class ProductsServiceImpl implements ProductsService {
 
     @Override
     public List<ProductsDto> findAllByNameAndCompanyBussinessNo(String name, Long bussinessNo) {
-        List<ProductsEntity> productsEntities = productsRepository.findAllByNameContainingAndCompanyBussinessNo(name, bussinessNo);
+        List<ProductsEntity> productsEntities = productsRepository.findAllByNameContainingIgnoreCaseAndCompanyBussinessNo(name, bussinessNo);
         List<ProductsDto> productsDtos = new ArrayList<>();
         if (productsEntities.isEmpty()) throw new RuntimeException("Not found!!");
         for (ProductsEntity product : productsEntities) {

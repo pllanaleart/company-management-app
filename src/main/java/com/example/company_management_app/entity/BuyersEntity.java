@@ -8,6 +8,8 @@ import java.util.List;
 public class BuyersEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Long bussinessNo;
     private String buyerStatus;
     private String name;
@@ -23,6 +25,14 @@ public class BuyersEntity {
     private CompanyEntity company;
     @OneToMany(mappedBy = "buyer")
     private List<InvoicesEntity> invoicesEntities;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public List<InvoicesEntity> getInvoicesEntities() {
         return invoicesEntities;
