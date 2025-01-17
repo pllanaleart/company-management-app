@@ -1,7 +1,5 @@
 package com.example.company_management_app.service;
 
-import com.example.company_management_app.entity.StockEntity;
-import com.example.company_management_app.shared.dto.ProductsDto;
 import com.example.company_management_app.shared.dto.StockDto;
 import com.example.company_management_app.ui.request.stock.StockCreateRequest;
 import com.example.company_management_app.ui.response.stock.StockPageResponse;
