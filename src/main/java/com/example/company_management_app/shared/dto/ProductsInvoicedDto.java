@@ -1,10 +1,5 @@
 package com.example.company_management_app.shared.dto;
 
-import com.example.company_management_app.entity.InvoicesEntity;
-import com.example.company_management_app.entity.ProductsEntity;
-import com.example.company_management_app.entity.keys.ProductsInvoicedPK;
-
-
 public class ProductsInvoicedDto {
     private ProductsDto product;
     private double quantity;

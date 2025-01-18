@@ -9,10 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface InvoicesRepository extends JpaRepository<InvoicesEntity,Long> {
+public interface InvoicesRepository extends JpaRepository<InvoicesEntity, Long> {
 
     Page<InvoicesEntity> findAllByCompanyBussinessNo(Long bussinessNo, Pageable pageable);
+
     Optional<InvoicesEntity> findByInvoiceNoAndCompanyBussinessNo(Long invoicesNo, Long bussinessNo);
-    InvoicesEntity findByIdAndCompanyBussinessNo(Long id,Long bussinessNo);
+
+    InvoicesEntity findByIdAndCompanyBussinessNo(Long id, Long bussinessNo);
 
 }

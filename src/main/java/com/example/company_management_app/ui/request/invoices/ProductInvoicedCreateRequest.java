@@ -1,7 +1,5 @@
 package com.example.company_management_app.ui.request.invoices;
 
-import com.example.company_management_app.entity.keys.ProductsInvoicedPK;
-
 public class ProductInvoicedCreateRequest {
 
     private Long invoice_id;

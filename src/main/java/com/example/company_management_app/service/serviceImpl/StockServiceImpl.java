@@ -35,52 +35,58 @@ public class StockServiceImpl implements StockService {
     public StockPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<StockEntity> stockEntityPage = stockRepository.findAllByCompanyBussinessNo(bussinessNo,pageable);
+        Page<StockEntity> stockEntityPage = stockRepository.findAllByCompanyBussinessNo(bussinessNo, pageable);
         List<StockEntity> stockEntities = stockEntityPage.getContent();
-        if (stockEntities.isEmpty())throw new RuntimeException("Not Found!!");
+        if (stockEntities.isEmpty()) throw new RuntimeException("Not Found!!");
         List<StockDto> stockDtos = new ArrayList<>();
-        for (StockEntity stock : stockEntities){
+        for (StockEntity stock : stockEntities) {
             stockDtos.add(mapper.map(stock, StockDto.class));
         }
-        StockPageResponse response = new StockPageResponse(stockDtos,page,limit,stockEntityPage.getTotalElements(),stockEntityPage.getTotalPages(),stockEntityPage.isLast());
+        StockPageResponse response = new StockPageResponse(stockDtos, page, limit, stockEntityPage.getTotalElements(), stockEntityPage.getTotalPages(), stockEntityPage.isLast());
 
         return response;
     }
 
     @Override
     public List<StockDto> findAllByProductNameContainingAndCompanyBussinessNo(String name, Long bussinessNo) {
-        List<StockEntity> stockEntities = stockRepository.findAllByProductNameContainingIgnoreCaseAndCompanyBussinessNo(name,bussinessNo);
-        if (stockEntities.isEmpty())throw new RuntimeException("Not found!!");
+        List<StockEntity> stockEntities = stockRepository.findAllByProductNameContainingIgnoreCaseAndCompanyBussinessNo(name, bussinessNo);
+        if (stockEntities.isEmpty()) throw new RuntimeException("Not found!!");
         List<StockDto> stockDtos = new ArrayList<>();
-        for (StockEntity stock:stockEntities){
-            stockDtos.add(mapper.map(stock,StockDto.class));
+        for (StockEntity stock : stockEntities) {
+            stockDtos.add(mapper.map(stock, StockDto.class));
         }
         return stockDtos;
     }
 
     @Override
     public StockDto findByProductBarcodeAndCompanyBussinessNo(Long barcode, Long bussinessNo) {
-        StockEntity stock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
-        if(stock == null){throw new RuntimeException("Stock not found!!");}
+        StockEntity stock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(barcode, bussinessNo);
+        if (stock == null) {
+            throw new RuntimeException("Stock not found!!");
+        }
         return mapper.map(stock, StockDto.class);
     }
 
     @Override
     public StockDto findByIdAndCompanyBussinessNo(Long id, Long bussinessNo) {
-        StockEntity stock = stockRepository.findByIdAndCompanyBussinessNo(id,bussinessNo);
-        if (stock == null){throw new RuntimeException("Stock not found!!");}
+        StockEntity stock = stockRepository.findByIdAndCompanyBussinessNo(id, bussinessNo);
+        if (stock == null) {
+            throw new RuntimeException("Stock not found!!");
+        }
         return mapper.map(stock, StockDto.class);
     }
 
     @Override
     public StockDto createStock(StockCreateRequest stock, Long bussinessNo) {
-        StockEntity productForStock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(stock.getBarcode(),bussinessNo);
+        StockEntity productForStock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(stock.getBarcode(), bussinessNo);
         StockEntity createdStock;
         StockDto stockDto;
-        if(productForStock == null){
-            productForStock=new StockEntity();
-            ProductsEntity product = productsRepository.findByBarcodeAndCompanyBussinessNo(stock.getBarcode(),bussinessNo);
-            if (product == null){throw new RuntimeException("Product not found!!!");}
+        if (productForStock == null) {
+            productForStock = new StockEntity();
+            ProductsEntity product = productsRepository.findByBarcodeAndCompanyBussinessNo(stock.getBarcode(), bussinessNo);
+            if (product == null) {
+                throw new RuntimeException("Product not found!!!");
+            }
             productForStock.setUnit(stock.getUnit());
             productForStock.setQuantity(stock.getQuantity());
             productForStock.setProduct(product);
@@ -88,25 +94,25 @@ public class StockServiceImpl implements StockService {
             productForStock.setLastUpdated(LocalDateTime.now());
             createdStock = stockRepository.save(productForStock);
             stockDto = mapper.map(createdStock, StockDto.class);
-        }else throw new RuntimeException("Product is registered in stock");
+        } else throw new RuntimeException("Product is registered in stock");
 
-        return  stockDto;
+        return stockDto;
     }
 
     @Override
-    public StockDto updateStock(StockCreateRequest stockCreateRequest,Long id, Long bussinessNo) {
-        StockEntity productToUpdate = stockRepository.findByIdAndCompanyBussinessNo(id,bussinessNo);
-        if(productToUpdate != null ){
-            if(stockCreateRequest.getQuantity() != 0){
+    public StockDto updateStock(StockCreateRequest stockCreateRequest, Long id, Long bussinessNo) {
+        StockEntity productToUpdate = stockRepository.findByIdAndCompanyBussinessNo(id, bussinessNo);
+        if (productToUpdate != null) {
+            if (stockCreateRequest.getQuantity() != 0) {
                 productToUpdate.setQuantity(stockCreateRequest.getQuantity());
             }
-            if (stockCreateRequest.getUnit() != null){
+            if (stockCreateRequest.getUnit() != null) {
                 productToUpdate.setUnit(stockCreateRequest.getUnit());
             }
             productToUpdate.setLastUpdated(LocalDateTime.now());
             stockRepository.save(productToUpdate);
 
-        }else throw  new RuntimeException("Product is not in stock");
+        } else throw new RuntimeException("Product is not in stock");
 
         return mapper.map(productToUpdate, StockDto.class);
     }

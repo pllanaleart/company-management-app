@@ -57,11 +57,15 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public ProductsDto createProduct(ProductsDto productsDto,Long bussinessNo) {
-        ProductsEntity productSearch = productsRepository.findByBarcodeAndCompanyBussinessNo(productsDto.getBarcode(),bussinessNo);
-        if(productSearch != null){throw new RuntimeException("Product with barcode: "+ productSearch.getBarcode()+" exists");}
-        productsDto.setPriceNoTvsh((productsDto.getPrice()-(productsDto.getPrice()*(AppConstants.DEFAULT_TVSH / 100))));
-        if(productsDto.getTvsh()<= 0){ productsDto.setTvsh(AppConstants.DEFAULT_TVSH);}
+    public ProductsDto createProduct(ProductsDto productsDto, Long bussinessNo) {
+        ProductsEntity productSearch = productsRepository.findByBarcodeAndCompanyBussinessNo(productsDto.getBarcode(), bussinessNo);
+        if (productSearch != null) {
+            throw new RuntimeException("Product with barcode: " + productSearch.getBarcode() + " exists");
+        }
+        productsDto.setPriceNoTvsh((productsDto.getPrice() - (productsDto.getPrice() * (AppConstants.DEFAULT_TVSH / 100))));
+        if (productsDto.getTvsh() <= 0) {
+            productsDto.setTvsh(AppConstants.DEFAULT_TVSH);
+        }
         ProductsEntity productsEntity = mapper.map(productsDto, ProductsEntity.class);
         ProductsEntity createdProduct = productsRepository.save(productsEntity);
         return mapper.map(createdProduct, ProductsDto.class);

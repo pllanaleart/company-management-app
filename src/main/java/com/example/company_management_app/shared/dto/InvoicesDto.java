@@ -1,12 +1,5 @@
 package com.example.company_management_app.shared.dto;
 
-import com.example.company_management_app.entity.BuyersEntity;
-import com.example.company_management_app.entity.InvoicesEntity;
-import com.example.company_management_app.entity.ProductsInvoiced;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

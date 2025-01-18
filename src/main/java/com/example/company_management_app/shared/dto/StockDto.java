@@ -1,8 +1,5 @@
 package com.example.company_management_app.shared.dto;
 
-import com.example.company_management_app.entity.CompanyEntity;
-import com.example.company_management_app.entity.ProductsEntity;
-
 import java.time.LocalDateTime;
 
 public class StockDto {
@@ -20,7 +17,6 @@ public class StockDto {
     public void setId(Long id) {
         this.id = id;
     }
-
 
 
     public String getUnit() {

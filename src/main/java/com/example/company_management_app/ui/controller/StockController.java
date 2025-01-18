@@ -24,36 +24,40 @@ public class StockController {
                                                          @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NO) int page,
                                                          @RequestParam(value = "limit", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int limit,
                                                          @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY) String sortBy,
-                                                         @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIR) String sortDir)
-    {
+                                                         @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIR) String sortDir) {
 
-        StockPageResponse response = stockService.findAllByCompanyBussinessNo(bussinessNo,page,limit,sortBy,sortDir);
+        StockPageResponse response = stockService.findAllByCompanyBussinessNo(bussinessNo, page, limit, sortBy, sortDir);
         return response;
     }
+
     @GetMapping("/{name}")
-    public List<StockDto> findAllByProductName(@PathVariable String name,@RequestParam Long bussinessNo){
-        List<StockDto> stockDtoList = stockService.findAllByProductNameContainingAndCompanyBussinessNo(name,bussinessNo);
+    public List<StockDto> findAllByProductName(@PathVariable String name, @RequestParam Long bussinessNo) {
+        List<StockDto> stockDtoList = stockService.findAllByProductNameContainingAndCompanyBussinessNo(name, bussinessNo);
 
         return stockDtoList;
     }
-    @GetMapping("/bar/{barcode}")
-    public StockDto findByProductBarcode(@PathVariable Long barcode, @RequestParam Long bussinessNo){
 
-        StockDto stockDto = stockService.findByProductBarcodeAndCompanyBussinessNo(barcode,bussinessNo);
+    @GetMapping("/bar/{barcode}")
+    public StockDto findByProductBarcode(@PathVariable Long barcode, @RequestParam Long bussinessNo) {
+
+        StockDto stockDto = stockService.findByProductBarcodeAndCompanyBussinessNo(barcode, bussinessNo);
 
         return stockDto;
     }
-    @GetMapping("/id/{id}")
-    public StockDto findById(@PathVariable Long id,@RequestParam Long bussinessNo){
-        return stockService.findByIdAndCompanyBussinessNo(id,bussinessNo);
-    }
-    @PostMapping
-    public StockDto createStock(@RequestBody StockCreateRequest createRequest, @RequestParam Long bussinessNo){
-        return  stockService.createStock(createRequest,bussinessNo);
-    }
-    @PutMapping("/{id}")
-    public StockDto updateStock(@RequestBody StockCreateRequest stockCreateRequest,@PathVariable Long id,@RequestParam Long bussinessNo){
 
-        return  stockService.updateStock(stockCreateRequest,id,bussinessNo);
+    @GetMapping("/id/{id}")
+    public StockDto findById(@PathVariable Long id, @RequestParam Long bussinessNo) {
+        return stockService.findByIdAndCompanyBussinessNo(id, bussinessNo);
+    }
+
+    @PostMapping
+    public StockDto createStock(@RequestBody StockCreateRequest createRequest, @RequestParam Long bussinessNo) {
+        return stockService.createStock(createRequest, bussinessNo);
+    }
+
+    @PutMapping("/{id}")
+    public StockDto updateStock(@RequestBody StockCreateRequest stockCreateRequest, @PathVariable Long id, @RequestParam Long bussinessNo) {
+
+        return stockService.updateStock(stockCreateRequest, id, bussinessNo);
     }
 }

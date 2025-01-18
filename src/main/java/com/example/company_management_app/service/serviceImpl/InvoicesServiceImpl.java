@@ -1,14 +1,20 @@
 package com.example.company_management_app.service.serviceImpl;
 
-import com.example.company_management_app.entity.*;
+import com.example.company_management_app.entity.BuyersEntity;
+import com.example.company_management_app.entity.InvoicesEntity;
+import com.example.company_management_app.entity.ProductsEntity;
+import com.example.company_management_app.entity.ProductsInvoiced;
 import com.example.company_management_app.entity.keys.ProductsInvoicedPK;
-import com.example.company_management_app.repository.*;
+import com.example.company_management_app.repository.BuyersRepository;
+import com.example.company_management_app.repository.InvoicesRepository;
+import com.example.company_management_app.repository.ProductsInvoicedRepository;
+import com.example.company_management_app.repository.ProductsRepository;
 import com.example.company_management_app.service.InvoicesService;
-import com.example.company_management_app.shared.AppConstants;
 import com.example.company_management_app.shared.dto.InvoicesDto;
 import com.example.company_management_app.ui.request.invoices.InvoicesCreateRequest;
 import com.example.company_management_app.ui.request.invoices.ProductInvoicedCreateRequest;
 import com.example.company_management_app.ui.response.invoices.InvoicesPageResponse;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,22 +48,25 @@ public class InvoicesServiceImpl implements InvoicesService {
     public InvoicesPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<InvoicesEntity> invoicesEntityPage = invoicesRepository.findAllByCompanyBussinessNo(bussinessNo,pageable);
+        Page<InvoicesEntity> invoicesEntityPage = invoicesRepository.findAllByCompanyBussinessNo(bussinessNo, pageable);
         List<InvoicesEntity> invoicesEntityList = invoicesEntityPage.getContent();
         List<InvoicesDto> invoicesDtoList = new ArrayList<>();
-        if (invoicesEntityList.isEmpty()){throw new RuntimeException("No invoices Found");}
-        for (InvoicesEntity invoice:invoicesEntityList){
+        if (invoicesEntityList.isEmpty()) {
+            throw new RuntimeException("No invoices Found");
+        }
+        for (InvoicesEntity invoice : invoicesEntityList) {
             invoicesDtoList.add(mapper.map(invoice, InvoicesDto.class));
         }
 
-        return new InvoicesPageResponse(invoicesDtoList,page,limit, invoicesEntityPage.getTotalElements(), invoicesEntityPage.getTotalPages(), invoicesEntityPage.isLast());
+        return new InvoicesPageResponse(invoicesDtoList, page, limit, invoicesEntityPage.getTotalElements(), invoicesEntityPage.getTotalPages(), invoicesEntityPage.isLast());
     }
 
     @Override
+    @Transactional
     public InvoicesDto createInvoice(InvoicesCreateRequest request, Long bussinessNo) {
-        Optional<InvoicesEntity> existingInvoice = invoicesRepository.findByInvoiceNoAndCompanyBussinessNo(request.getInvoiceNo(),bussinessNo);
-        if(existingInvoice.isPresent()){
-            throw new RuntimeException("Invoice with number: "+request.getInvoiceNo()+ " is present");
+        Optional<InvoicesEntity> existingInvoice = invoicesRepository.findByInvoiceNoAndCompanyBussinessNo(request.getInvoiceNo(), bussinessNo);
+        if (existingInvoice.isPresent()) {
+            throw new RuntimeException("Invoice with number: " + request.getInvoiceNo() + " is present");
         }
         InvoicesEntity invoiceToSave = new InvoicesEntity();
         invoiceToSave.setInvoiceNo(request.getInvoiceNo());
@@ -66,35 +75,37 @@ public class InvoicesServiceImpl implements InvoicesService {
         invoiceToSave.setDate(LocalDateTime.now());
         invoiceToSave.setDueDate(LocalDate.from(LocalDateTime.now()));
         BuyersEntity buyersEntity = buyersRepository.findByIdAndCompanyBussinessNo(request.getBuyerId(), bussinessNo);
-        if(buyersEntity==null){throw new RuntimeException("Buyer not registered!!");}
+        if (buyersEntity == null) {
+            throw new RuntimeException("Buyer not registered!!");
+        }
         invoiceToSave.setBuyer(buyersEntity);
         invoiceToSave.setCompany(buyersEntity.getCompany());
         List<ProductsInvoiced> productsInvoicedList = new ArrayList<>();
         double invoiceTotalAmount = 0;
-        double invoiceAmountNoTvsh=0;
+        double invoiceAmountNoTvsh = 0;
 
-        for (ProductInvoicedCreateRequest productInvoicedCreateRequest : request.getProductInvoicedCreateRequests()){
-                ProductsEntity product = productsRepository.findByIdAndCompanyBussinessNo(productInvoicedCreateRequest.getProduct_id(),bussinessNo);
-                double totalPrice = product.getPrice() * productInvoicedCreateRequest.getQuantity();
-                ProductsInvoiced productsInvoiced = new ProductsInvoiced();
-                productsInvoiced.setQuantity(productInvoicedCreateRequest.getQuantity());
-                productsInvoiced.setTotalPrice(totalPrice);
-                productsInvoiced.setProduct(product);
-                productsInvoicedList.add(productsInvoiced);
-                invoiceTotalAmount = invoiceTotalAmount + totalPrice;
-                totalPrice = totalPrice -(totalPrice * product.getTvsh()/100);
-                invoiceAmountNoTvsh = invoiceAmountNoTvsh +totalPrice;
+        for (ProductInvoicedCreateRequest productInvoicedCreateRequest : request.getProductInvoicedCreateRequests()) {
+            ProductsEntity product = productsRepository.findByIdAndCompanyBussinessNo(productInvoicedCreateRequest.getProduct_id(), bussinessNo);
+            double totalPrice = product.getPrice() * productInvoicedCreateRequest.getQuantity();
+            ProductsInvoiced productsInvoiced = new ProductsInvoiced();
+            productsInvoiced.setQuantity(productInvoicedCreateRequest.getQuantity());
+            productsInvoiced.setTotalPrice(totalPrice);
+            productsInvoiced.setProduct(product);
+            productsInvoicedList.add(productsInvoiced);
+            invoiceTotalAmount = invoiceTotalAmount + totalPrice;
+            totalPrice = totalPrice - (totalPrice * product.getTvsh() / 100);
+            invoiceAmountNoTvsh = invoiceAmountNoTvsh + totalPrice;
         }
 
         invoiceToSave.setTotalPrice(invoiceTotalAmount);
         invoiceToSave.setPriceNoTvsh(invoiceAmountNoTvsh);
         invoiceToSave = invoicesRepository.save(invoiceToSave);
-            for (ProductsInvoiced productInvoiced :productsInvoicedList){
-                productInvoiced.setInvoice(invoiceToSave);
-                ProductsInvoicedPK productsInvoicedPK = new ProductsInvoicedPK(invoiceToSave.getId(),productInvoiced.getProduct().getId());
-                productInvoiced.setProductsInvoicedId(productsInvoicedPK);
-                productsInvoicedRepository.save(productInvoiced);
-            }
+        for (ProductsInvoiced productInvoiced : productsInvoicedList) {
+            productInvoiced.setInvoice(invoiceToSave);
+            ProductsInvoicedPK productsInvoicedPK = new ProductsInvoicedPK(invoiceToSave.getId(), productInvoiced.getProduct().getId());
+            productInvoiced.setProductsInvoicedId(productsInvoicedPK);
+            productsInvoicedRepository.save(productInvoiced);
+        }
         invoiceToSave.setProductsInvoiced(productsInvoicedList);
         return mapper.map(invoiceToSave, InvoicesDto.class);
     }

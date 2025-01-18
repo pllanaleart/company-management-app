@@ -12,7 +12,10 @@ import java.util.List;
 public interface StockRepository extends JpaRepository<StockEntity, Long> {
 
     Page<StockEntity> findAllByCompanyBussinessNo(Long bussinessNo, Pageable pageable);
+
     List<StockEntity> findAllByProductNameContainingIgnoreCaseAndCompanyBussinessNo(String name, Long bussinessNo);
+
     StockEntity findByProductBarcodeAndCompanyBussinessNo(Long barcode, Long bussinessNo);
-    StockEntity findByIdAndCompanyBussinessNo(Long id,Long bussinessNo);
+
+    StockEntity findByIdAndCompanyBussinessNo(Long id, Long bussinessNo);
 }
