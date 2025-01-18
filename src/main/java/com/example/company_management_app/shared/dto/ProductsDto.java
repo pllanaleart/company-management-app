@@ -6,7 +6,6 @@ public class ProductsDto {
     private String name;
     private String description;
     private String category;
-    private CompanyDto company;
     private double price;
     private double priceNoTvsh;
     private double tvsh;
@@ -50,14 +49,6 @@ public class ProductsDto {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public CompanyDto getCompany() {
-        return company;
-    }
-
-    public void setCompany(CompanyDto company) {
-        this.company = company;
     }
 
     public double getPrice() {

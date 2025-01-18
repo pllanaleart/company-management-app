@@ -1,55 +1,44 @@
-package com.example.company_management_app.entity;
+package com.example.company_management_app.shared.dto;
 
-import jakarta.persistence.*;
+import com.example.company_management_app.entity.BuyersEntity;
+import com.example.company_management_app.entity.InvoicesEntity;
+import com.example.company_management_app.entity.ProductsInvoiced;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity(name = "invoices")
-public class InvoicesEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class InvoicesDto {
     private Long id;
     private Long invoiceNo;
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "buyerId")
-    private BuyersEntity buyer;
+    private BuyersDto buyer;
     private double totalPrice;
     private double priceNoTvsh;
     private LocalDateTime date;
     private LocalDate dueDate;
     private String paymentStatus;
-    @OneToMany(mappedBy = "invoice")
-    private List<ProductsInvoiced> productsInvoiced;
-    @ManyToOne
-    @JoinColumn(name = "companyNo")
-    private CompanyEntity company;
+    private List<ProductsInvoicedDto> productsInvoiced;
+    private CompanyDto company;
+
+
+    public CompanyDto getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyDto company) {
+        this.company = company;
+    }
 
     public Long getId() {
         return id;
     }
 
-    public CompanyEntity getCompany() {
-        return company;
-    }
-
-    public void setCompany(CompanyEntity company) {
-        this.company = company;
-    }
-
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<ProductsInvoiced> getProductsInvoiced() {
-        return productsInvoiced;
-    }
-
-    public void setProductsInvoiced(List<ProductsInvoiced> productsInvoiced) {
-        this.productsInvoiced = productsInvoiced;
     }
 
     public Long getInvoiceNo() {
@@ -68,13 +57,14 @@ public class InvoicesEntity {
         this.description = description;
     }
 
-    public BuyersEntity getBuyer() {
+    public BuyersDto getBuyer() {
         return buyer;
     }
 
-    public void setBuyer(BuyersEntity buyer) {
+    public void setBuyer(BuyersDto buyer) {
         this.buyer = buyer;
     }
+
 
     public double getTotalPrice() {
         return totalPrice;
@@ -114,5 +104,13 @@ public class InvoicesEntity {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public List<ProductsInvoicedDto> getProductsInvoiced() {
+        return productsInvoiced;
+    }
+
+    public void setProductsInvoiced(List<ProductsInvoicedDto> productsInvoiced) {
+        this.productsInvoiced = productsInvoiced;
     }
 }

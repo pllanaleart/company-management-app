@@ -19,6 +19,14 @@ public class ProductsInvoiced {
     private double quantity;
     private double totalPrice;
 
+    public ProductsInvoiced() {
+    }
+
+    public ProductsInvoiced(ProductsInvoicedPK productsInvoicedId, double quantity, double totalPrice) {
+        this.productsInvoicedId = productsInvoicedId;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
 
     public InvoicesEntity getInvoice() {
         return invoice;

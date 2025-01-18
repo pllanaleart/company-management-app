@@ -102,13 +102,5 @@ public class BuyersDto {
         this.bankNo = bankNo;
     }
 
-    public CompanyDto getCompany() {
-        return company;
-    }
 
-    public void setCompany(CompanyDto company) {
-        this.company = company;
-    }
-
-    private CompanyDto company;
 }

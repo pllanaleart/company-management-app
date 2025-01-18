@@ -12,7 +12,6 @@ public class StockDto {
     private String unit;
     private double quantity;
     private LocalDateTime lastUpdated;
-    private CompanyDto company;
 
     public Long getId() {
         return id;
@@ -56,11 +55,5 @@ public class StockDto {
         this.product = product;
     }
 
-    public CompanyDto getCompany() {
-        return company;
-    }
 
-    public void setCompany(CompanyDto company) {
-        this.company = company;
-    }
 }

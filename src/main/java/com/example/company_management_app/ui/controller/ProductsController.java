@@ -60,7 +60,6 @@ public class ProductsController {
         if (companyDto == null) {
             throw new RuntimeException("Company not found!!");
         }
-        productsDto.setCompany(companyDto);
         ProductsDto createdProduct = productsService.createProduct(productsDto,bussinessNo);
         if (createdProduct == null) throw new RuntimeException("Cannot create product!!");
         return createdProduct;

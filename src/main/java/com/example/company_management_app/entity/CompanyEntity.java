@@ -33,6 +33,16 @@ public class CompanyEntity {
     private List<SellingsEntity> sellings;
     @OneToMany(mappedBy = "company")
     private List<UsersEntity> users;
+    @OneToMany(mappedBy = "company")
+    private List<InvoicesEntity> invoices;
+
+    public List<InvoicesEntity> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<InvoicesEntity> invoices) {
+        this.invoices = invoices;
+    }
 
     public List<BuyersEntity> getBuyerEntity() {
         return buyerEntity;
