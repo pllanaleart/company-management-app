@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InvoicesServiceImpl implements InvoicesService {
@@ -28,15 +29,13 @@ public class InvoicesServiceImpl implements InvoicesService {
     private ProductsInvoicedRepository productsInvoicedRepository;
     private ProductsRepository productsRepository;
     private BuyersRepository buyersRepository;
-    private CompanyRepository companyRepository;
     private ModelMapper mapper = new ModelMapper();
 
-    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, ProductsInvoicedRepository productsInvoicedRepository, ProductsRepository productsRepository, BuyersRepository buyersRepository, CompanyRepository companyRepository) {
+    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, ProductsInvoicedRepository productsInvoicedRepository, ProductsRepository productsRepository, BuyersRepository buyersRepository) {
         this.invoicesRepository = invoicesRepository;
         this.productsInvoicedRepository = productsInvoicedRepository;
         this.productsRepository = productsRepository;
         this.buyersRepository = buyersRepository;
-        this.companyRepository = companyRepository;
     }
 
     @Override
@@ -56,16 +55,25 @@ public class InvoicesServiceImpl implements InvoicesService {
 
     @Override
     public InvoicesDto createInvoice(InvoicesCreateRequest request, Long bussinessNo) {
-        InvoicesEntity invoiceEntity = invoicesRepository.findByInvoiceNoAndCompanyBussinessNo(request.getInvoiceNo(),bussinessNo);
-        InvoicesEntity createdInvoice = new InvoicesEntity();
-        if(invoiceEntity == null){
-            invoiceEntity = new InvoicesEntity();
-            invoiceEntity.setInvoiceNo(request.getInvoiceNo());
-            invoiceEntity.setDescription(request.getDescription());
-            invoiceEntity.setPaymentStatus(request.getPaymentStatus());
-            List<ProductsInvoiced> productsInvoicedList = new ArrayList<>();
-            double invoiceTotalAmount = 0;
-            for (ProductInvoicedCreateRequest productInvoicedCreateRequest : request.getProductInvoicedCreateRequests()){
+        Optional<InvoicesEntity> existingInvoice = invoicesRepository.findByInvoiceNoAndCompanyBussinessNo(request.getInvoiceNo(),bussinessNo);
+        if(existingInvoice.isPresent()){
+            throw new RuntimeException("Invoice with number: "+request.getInvoiceNo()+ " is present");
+        }
+        InvoicesEntity invoiceToSave = new InvoicesEntity();
+        invoiceToSave.setInvoiceNo(request.getInvoiceNo());
+        invoiceToSave.setDescription(request.getDescription());
+        invoiceToSave.setPaymentStatus(request.getPaymentStatus());
+        invoiceToSave.setDate(LocalDateTime.now());
+        invoiceToSave.setDueDate(LocalDate.from(LocalDateTime.now()));
+        BuyersEntity buyersEntity = buyersRepository.findByIdAndCompanyBussinessNo(request.getBuyerId(), bussinessNo);
+        if(buyersEntity==null){throw new RuntimeException("Buyer not registered!!");}
+        invoiceToSave.setBuyer(buyersEntity);
+        invoiceToSave.setCompany(buyersEntity.getCompany());
+        List<ProductsInvoiced> productsInvoicedList = new ArrayList<>();
+        double invoiceTotalAmount = 0;
+        double invoiceAmountNoTvsh=0;
+
+        for (ProductInvoicedCreateRequest productInvoicedCreateRequest : request.getProductInvoicedCreateRequests()){
                 ProductsEntity product = productsRepository.findByIdAndCompanyBussinessNo(productInvoicedCreateRequest.getProduct_id(),bussinessNo);
                 double totalPrice = product.getPrice() * productInvoicedCreateRequest.getQuantity();
                 ProductsInvoiced productsInvoiced = new ProductsInvoiced();
@@ -74,27 +82,20 @@ public class InvoicesServiceImpl implements InvoicesService {
                 productsInvoiced.setProduct(product);
                 productsInvoicedList.add(productsInvoiced);
                 invoiceTotalAmount = invoiceTotalAmount + totalPrice;
-            }
+                totalPrice = totalPrice -(totalPrice * product.getTvsh()/100);
+                invoiceAmountNoTvsh = invoiceAmountNoTvsh +totalPrice;
+        }
 
-            invoiceEntity.setTotalPrice(invoiceTotalAmount);
-            invoiceEntity.setDate(LocalDateTime.now());
-            invoiceEntity.setDueDate(LocalDate.from(LocalDateTime.now()));
-            invoiceEntity.setPriceNoTvsh(invoiceTotalAmount-(invoiceTotalAmount * AppConstants.DEFAULT_TVSH/100));
-            BuyersEntity buyersEntity = buyersRepository.findByIdAndCompanyBussinessNo(request.getBuyerId(), bussinessNo);
-            if(buyersEntity == null){throw  new RuntimeException("Buyer not foound");}
-            invoiceEntity.setBuyer(buyersEntity);
-            CompanyEntity company = companyRepository.findByBussinessNo(bussinessNo);
-            invoiceEntity.setCompany(company);
-            createdInvoice = invoicesRepository.save(invoiceEntity);
+        invoiceToSave.setTotalPrice(invoiceTotalAmount);
+        invoiceToSave.setPriceNoTvsh(invoiceAmountNoTvsh);
+        invoiceToSave = invoicesRepository.save(invoiceToSave);
             for (ProductsInvoiced productInvoiced :productsInvoicedList){
-                productInvoiced.setInvoice(createdInvoice);
-                ProductsInvoicedPK productsInvoicedPK = new ProductsInvoicedPK(createdInvoice.getId(),productInvoiced.getProduct().getId());
+                productInvoiced.setInvoice(invoiceToSave);
+                ProductsInvoicedPK productsInvoicedPK = new ProductsInvoicedPK(invoiceToSave.getId(),productInvoiced.getProduct().getId());
                 productInvoiced.setProductsInvoicedId(productsInvoicedPK);
                 productsInvoicedRepository.save(productInvoiced);
             }
-
-        }else throw new RuntimeException("Invoice found");
-        InvoicesEntity finalInvoice = invoicesRepository.findByIdAndCompanyBussinessNo(createdInvoice.getId(), bussinessNo);
-        return mapper.map(finalInvoice, InvoicesDto.class);
+        invoiceToSave.setProductsInvoiced(productsInvoicedList);
+        return mapper.map(invoiceToSave, InvoicesDto.class);
     }
 }
