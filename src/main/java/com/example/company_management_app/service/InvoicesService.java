@@ -5,7 +5,7 @@ import com.example.company_management_app.ui.request.invoices.InvoicesCreateRequ
 import com.example.company_management_app.ui.response.invoices.InvoicesPageResponse;
 
 public interface InvoicesService {
-    InvoicesPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir);
+    InvoicesPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir,String type);
 
     InvoicesDto createInvoice(InvoicesCreateRequest request, Long bussinessNo);
 }

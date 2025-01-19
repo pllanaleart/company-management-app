@@ -44,20 +44,46 @@ public class InvoicesServiceImpl implements InvoicesService {
     }
 
     @Override
-    public InvoicesPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir) {
+    public InvoicesPageResponse findAllByCompanyBussinessNo(Long bussinessNo, int page, int limit, String sortBy, String sortDir,String type) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<InvoicesEntity> invoicesEntityPage = invoicesRepository.findAllByCompanyBussinessNo(bussinessNo, pageable);
-        List<InvoicesEntity> invoicesEntityList = invoicesEntityPage.getContent();
         List<InvoicesDto> invoicesDtoList = new ArrayList<>();
-        if (invoicesEntityList.isEmpty()) {
-            throw new RuntimeException("No invoices Found");
-        }
-        for (InvoicesEntity invoice : invoicesEntityList) {
-            invoicesDtoList.add(mapper.map(invoice, InvoicesDto.class));
-        }
+        InvoicesPageResponse invoicesPageResponse = new InvoicesPageResponse();
+        if(type.equalsIgnoreCase("SELL")){
+            Page<InvoicesEntity> invoicesEntityPageSell = invoicesRepository.findAllByCompanyBussinessNoAndInvoiceType(bussinessNo,pageable,InvoiceType.SELL);
+            List<InvoicesEntity> invoicesEntityListSell = invoicesEntityPageSell.getContent();
+            if (invoicesEntityListSell.isEmpty()) {
+                throw new RuntimeException("No invoices Found");
+            }
+            for (InvoicesEntity invoice : invoicesEntityListSell) {
+                invoicesDtoList.add(mapper.map(invoice, InvoicesDto.class));
+            }
+            invoicesPageResponse = new InvoicesPageResponse(invoicesDtoList,page,limit,invoicesEntityPageSell.getTotalElements(), invoicesEntityPageSell.getTotalPages(), invoicesEntityPageSell.isLast());
+        } else if (type.equalsIgnoreCase("BUY")) {
+            Page<InvoicesEntity> invoicesEntityPageBuy = invoicesRepository.findAllByCompanyBussinessNoAndInvoiceType(bussinessNo,pageable,InvoiceType.BUY);
+            List<InvoicesEntity> invoicesEntityListBuy = invoicesEntityPageBuy.getContent();
+            if (invoicesEntityListBuy.isEmpty()) {
+                throw new RuntimeException("No invoices Found");
+            }
+            for (InvoicesEntity invoice : invoicesEntityListBuy) {
+                invoicesDtoList.add(mapper.map(invoice, InvoicesDto.class));
+            }
+            invoicesPageResponse = new InvoicesPageResponse(invoicesDtoList,page,limit,invoicesEntityPageBuy.getTotalElements(), invoicesEntityPageBuy.getTotalPages(), invoicesEntityPageBuy.isLast());
 
-        return new InvoicesPageResponse(invoicesDtoList, page, limit, invoicesEntityPage.getTotalElements(), invoicesEntityPage.getTotalPages(), invoicesEntityPage.isLast());
+        }else {
+            Page<InvoicesEntity> invoicesEntityPage = invoicesRepository.findAllByCompanyBussinessNo(bussinessNo, pageable);
+            List<InvoicesEntity> invoicesEntityList = invoicesEntityPage.getContent();
+
+            if (invoicesEntityList.isEmpty()) {
+                throw new RuntimeException("No invoices Found");
+            }
+            for (InvoicesEntity invoice : invoicesEntityList) {
+                invoicesDtoList.add(mapper.map(invoice, InvoicesDto.class));
+            }
+            invoicesPageResponse = new InvoicesPageResponse(invoicesDtoList,page,limit,invoicesEntityPage.getTotalElements(), invoicesEntityPage.getTotalPages(), invoicesEntityPage.isLast());
+
+        }
+        return invoicesPageResponse;
     }
 
     @Override
