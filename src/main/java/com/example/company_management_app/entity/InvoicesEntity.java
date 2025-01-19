@@ -1,5 +1,6 @@
 package com.example.company_management_app.entity;
 
+import com.example.company_management_app.shared.InvoiceType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class InvoicesEntity {
     private LocalDateTime date;
     private LocalDate dueDate;
     private String paymentStatus;
+    private InvoiceType invoiceType;
     @OneToMany(mappedBy = "invoice")
     private List<ProductsInvoiced> productsInvoiced;
     @ManyToOne
@@ -34,6 +36,14 @@ public class InvoicesEntity {
 
     public CompanyEntity getCompany() {
         return company;
+    }
+
+    public InvoiceType getInvoiceType() {
+        return invoiceType;
+    }
+
+    public void setInvoiceType(InvoiceType invoiceType) {
+        this.invoiceType = invoiceType;
     }
 
     public void setCompany(CompanyEntity company) {

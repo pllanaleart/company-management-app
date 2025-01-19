@@ -1,15 +1,10 @@
 package com.example.company_management_app.service.serviceImpl;
 
-import com.example.company_management_app.entity.BuyersEntity;
-import com.example.company_management_app.entity.InvoicesEntity;
-import com.example.company_management_app.entity.ProductsEntity;
-import com.example.company_management_app.entity.ProductsInvoiced;
+import com.example.company_management_app.entity.*;
 import com.example.company_management_app.entity.keys.ProductsInvoicedPK;
-import com.example.company_management_app.repository.BuyersRepository;
-import com.example.company_management_app.repository.InvoicesRepository;
-import com.example.company_management_app.repository.ProductsInvoicedRepository;
-import com.example.company_management_app.repository.ProductsRepository;
+import com.example.company_management_app.repository.*;
 import com.example.company_management_app.service.InvoicesService;
+import com.example.company_management_app.shared.InvoiceType;
 import com.example.company_management_app.shared.dto.InvoicesDto;
 import com.example.company_management_app.ui.request.invoices.InvoicesCreateRequest;
 import com.example.company_management_app.ui.request.invoices.ProductInvoicedCreateRequest;
@@ -35,13 +30,17 @@ public class InvoicesServiceImpl implements InvoicesService {
     private ProductsInvoicedRepository productsInvoicedRepository;
     private ProductsRepository productsRepository;
     private BuyersRepository buyersRepository;
+    private StockRepository stockRepository;
+    private SellingsRepository sellingsRepository;
     private ModelMapper mapper = new ModelMapper();
 
-    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, ProductsInvoicedRepository productsInvoicedRepository, ProductsRepository productsRepository, BuyersRepository buyersRepository) {
+    public InvoicesServiceImpl(InvoicesRepository invoicesRepository, ProductsInvoicedRepository productsInvoicedRepository, ProductsRepository productsRepository, BuyersRepository buyersRepository, StockRepository stockRepository, SellingsRepository sellingsRepository) {
         this.invoicesRepository = invoicesRepository;
         this.productsInvoicedRepository = productsInvoicedRepository;
         this.productsRepository = productsRepository;
         this.buyersRepository = buyersRepository;
+        this.stockRepository = stockRepository;
+        this.sellingsRepository = sellingsRepository;
     }
 
     @Override
@@ -74,6 +73,7 @@ public class InvoicesServiceImpl implements InvoicesService {
         invoiceToSave.setPaymentStatus(request.getPaymentStatus());
         invoiceToSave.setDate(LocalDateTime.now());
         invoiceToSave.setDueDate(LocalDate.from(LocalDateTime.now()));
+        invoiceToSave.setInvoiceType(request.getInvoiceType());
         BuyersEntity buyersEntity = buyersRepository.findByIdAndCompanyBussinessNo(request.getBuyerId(), bussinessNo);
         if (buyersEntity == null) {
             throw new RuntimeException("Buyer not registered!!");
@@ -105,8 +105,27 @@ public class InvoicesServiceImpl implements InvoicesService {
             ProductsInvoicedPK productsInvoicedPK = new ProductsInvoicedPK(invoiceToSave.getId(), productInvoiced.getProduct().getId());
             productInvoiced.setProductsInvoicedId(productsInvoicedPK);
             productsInvoicedRepository.save(productInvoiced);
+            handleStock(productInvoiced.getProduct(),request.getInvoiceType(),productInvoiced.getQuantity());
         }
         invoiceToSave.setProductsInvoiced(productsInvoicedList);
+        SellingsEntity sellingsEntity = new SellingsEntity();
+        sellingsEntity.setCompany(invoiceToSave.getCompany());
+        sellingsEntity.setDate(LocalDateTime.now());
+        sellingsEntity.setName("InvoiceNo: " + invoiceToSave.getInvoiceNo());
+        sellingsEntity.setPrice(invoiceToSave.getTotalPrice());
+        sellingsEntity.setDescription("Regular Selling invoice");
+        sellingsRepository.save(sellingsEntity);
         return mapper.map(invoiceToSave, InvoicesDto.class);
+    }
+    private void handleStock(ProductsEntity product, InvoiceType invoiceType,double quantity){
+        if (invoiceType == InvoiceType.SELL){
+            StockEntity stock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(product.getBarcode(), product.getCompany().getBussinessNo());
+            stock.setQuantity(stock.getQuantity()-quantity);
+            stockRepository.save(stock);
+        } else if (invoiceType==InvoiceType.BUY) {
+            StockEntity stock = stockRepository.findByProductBarcodeAndCompanyBussinessNo(product.getBarcode(), product.getCompany().getBussinessNo());
+            stock.setQuantity(stock.getQuantity()+quantity);
+            stockRepository.save(stock);
+        }else throw new RuntimeException("Invoice type not acceptable!!");
     }
 }

@@ -1,5 +1,7 @@
 package com.example.company_management_app.ui.request.invoices;
 
+import com.example.company_management_app.shared.InvoiceType;
+
 import java.util.List;
 
 public class InvoicesCreateRequest {
@@ -8,10 +10,19 @@ public class InvoicesCreateRequest {
     private String description;
     private Long buyerId;
     private String paymentStatus;
+    private InvoiceType invoiceType;
     private List<ProductInvoicedCreateRequest> productInvoicedCreateRequests;
+
+    public InvoiceType getInvoiceType() {
+        return invoiceType;
+    }
 
     public Long getInvoiceNo() {
         return invoiceNo;
+    }
+
+    public void setInvoiceType(InvoiceType invoiceType) {
+        this.invoiceType = invoiceType;
     }
 
     public void setInvoiceNo(Long invoiceNo) {

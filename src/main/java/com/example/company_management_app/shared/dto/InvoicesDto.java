@@ -1,5 +1,7 @@
 package com.example.company_management_app.shared.dto;
 
+import com.example.company_management_app.shared.InvoiceType;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,9 +16,17 @@ public class InvoicesDto {
     private LocalDateTime date;
     private LocalDate dueDate;
     private String paymentStatus;
+    private InvoiceType invoiceType;
     private List<ProductsInvoicedDto> productsInvoiced;
     private CompanyDto company;
 
+    public InvoiceType getInvoiceType() {
+        return invoiceType;
+    }
+
+    public void setInvoiceType(InvoiceType invoiceType) {
+        this.invoiceType = invoiceType;
+    }
 
     public CompanyDto getCompany() {
         return company;
